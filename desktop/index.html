@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EMS Tracker</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; }
+    .status { font-size: 24px; margin: 20px 0; }
+    .active { color: #10b981; }
+    .idle { color: #f59e0b; }
+    input { padding: 10px; width: 80%; margin-bottom: 10px; border-radius: 5px; border: none; }
+    button { padding: 10px 20px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>EMS Activity Tracker</h2>
+  <div id="login-section">
+    <input type="text" id="token" placeholder="Paste your JWT Token here">
+    <button onclick="startTracking()">Start Tracking</button>
+  </div>
+  <div id="tracking-section" style="display: none;">
+    <div id="status" class="status active">Tracking Active</div>
+    <p id="employee-name" style="color: #6366f1; font-weight: bold; margin-bottom: 10px;"></p>
+    <p>Sending heartbeat every 60s...</p>
+    <p id="idle-info">Idle Time: 0s</p>
+    <button onclick="stopTracking()" style="background: #ef4444;">Stop</button>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
