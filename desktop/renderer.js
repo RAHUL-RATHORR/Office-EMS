@@ -3,7 +3,6 @@ let statusInterval;
 let token = '';
 
 // On load, check if we have a saved token
-/* 
 window.onload = () => {
   const savedToken = localStorage.getItem('ems_token');
   if (savedToken) {
@@ -11,7 +10,6 @@ window.onload = () => {
     startTracking();
   }
 };
-*/
 
 async function startTracking() {
   token = document.getElementById('token').value;

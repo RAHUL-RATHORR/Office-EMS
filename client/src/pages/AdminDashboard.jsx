@@ -191,7 +191,6 @@ const AdminDashboard = () => {
           {[
             { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
             { id: 'employees', label: 'Employees', icon: <Users size={20} /> },
-            { id: 'activity', label: 'Live Status', icon: <Clock size={20} /> },
             { id: 'reports', label: 'Work Reports', icon: <FileText size={20} /> },
             { id: 'monthly', label: 'Monthly Report', icon: <Calendar size={20} /> },
             { id: 'screenshots', label: 'Screenshots', icon: <Camera size={20} /> },
@@ -239,6 +238,62 @@ const AdminDashboard = () => {
 
         {activeTab === 'dashboard' && (
           <div className="animate-fade-in">
+            {/* Stats Cards (Moved to Absolute Top) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+              <div className="glass-card" style={{ textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Total Employees</p>
+                <h2>{employees.length}</h2>
+              </div>
+              <div className="glass-card" style={{ textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Currently Active</p>
+                <h2 style={{ color: 'var(--accent)' }}>{activity.filter(a => a.status === 'active').length}</h2>
+              </div>
+              <div className="glass-card" style={{ textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Pending Leaves</p>
+                <h2 style={{ color: 'var(--warning)' }}>{leaves.filter(l => l.status === 'pending').length}</h2>
+              </div>
+              <div className="glass-card" style={{ textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Daily Reports Today</p>
+                <h2>{reports.filter(r => new Date(r.created_at).toDateString() === new Date().toDateString()).length}</h2>
+              </div>
+            </div>
+
+            {/* Live Online List */}
+            <div className="glass-card" style={{ marginBottom: '30px' }}>
+              <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="pulse" style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--accent)' }} />
+                Currently Online
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+                {activity.filter(a => a.status !== 'offline').length > 0 ? (
+                  activity.filter(a => a.status !== 'offline').map(act => (
+                    <div key={act.id} style={{ 
+                      padding: '12px', 
+                      background: 'rgba(255,255,255,0.05)', 
+                      borderRadius: '8px', 
+                      border: '1px solid var(--border)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px'
+                    }}>
+                      <div style={{ 
+                        width: '8px', height: '8px', borderRadius: '50%', 
+                        background: act.status === 'active' ? 'var(--accent)' : 'var(--warning)' 
+                      }} />
+                      <div>
+                        <p style={{ fontWeight: 'bold', margin: 0, fontSize: '0.9rem' }}>{act.name}</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                          {act.status.toUpperCase()} • {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>No employees currently online.</p>
+                )}
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
               <div className="glass-card">
                 <h3 style={{ marginBottom: '20px' }}>Attendance Overview</h3>
@@ -267,7 +322,7 @@ const AdminDashboard = () => {
                         data: [
                           activity.filter(a => a.status === 'active').length,
                           activity.filter(a => a.status === 'idle').length,
-                          employees.length - activity.length
+                          employees.length - activity.filter(a => a.status !== 'offline').length
                         ],
                         backgroundColor: ['#10b981', '#f59e0b', '#64748b']
                       }]
@@ -275,25 +330,6 @@ const AdminDashboard = () => {
                     options={{ maintainAspectRatio: false }}
                   />
                 </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-              <div className="glass-card" style={{ textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Total Employees</p>
-                <h2>{employees.length}</h2>
-              </div>
-              <div className="glass-card" style={{ textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Currently Active</p>
-                <h2 style={{ color: 'var(--accent)' }}>{activity.filter(a => a.status === 'active').length}</h2>
-              </div>
-              <div className="glass-card" style={{ textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Pending Leaves</p>
-                <h2 style={{ color: 'var(--warning)' }}>{leaves.filter(l => l.status === 'pending').length}</h2>
-              </div>
-              <div className="glass-card" style={{ textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '5px' }}>Daily Reports Today</p>
-                <h2>{reports.filter(r => new Date(r.created_at).toDateString() === new Date().toDateString()).length}</h2>
               </div>
             </div>
           </div>
@@ -346,26 +382,6 @@ const AdminDashboard = () => {
                 })}
               </tbody>
             </table>
-          </div>
-        )}
-
-        {activeTab === 'activity' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-            {activity.map(act => (
-              <div key={act.id} className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{
-                  width: '12px', height: '12px', borderRadius: '50%',
-                  background: act.status === 'active' ? 'var(--accent)' : act.status === 'idle' ? 'var(--warning)' : '#64748b'
-                }} />
-                <div>
-                  <h3 style={{ fontSize: '1.1rem' }}>{act.name}</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    {act.status ? act.status.charAt(0).toUpperCase() + act.status.slice(1) : 'Offline'}
-                    {act.timestamp && ` • ${new Date(act.timestamp).toLocaleTimeString()}`}
-                  </p>
-                </div>
-              </div>
-            ))}
           </div>
         )}
 
